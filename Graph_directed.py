@@ -28,7 +28,6 @@ class Graph:
             self.graph[adj] = {}
 
         self.graph[vertex][adj] = weight
-        self.graph[adj][vertex] = weight
         return self
 
     def getDistance(self,node1,nodes):
