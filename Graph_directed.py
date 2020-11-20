@@ -1,9 +1,9 @@
 class Graph:
-    def __init__(self, graph_struct={}):
-        self.graph = graph_struct
+    def __init__(self, graph_init):
+        self.graph = graph_init
         self.start = ''
         self.end = ''
-
+        self.vertex_add = {}
     def __str__(self):
         grh = ''
         for vrt in self.getVertices():
@@ -15,6 +15,13 @@ class Graph:
     def setStartEnd(self,start,end):
         self.start = start
         self.end = end
+
+    def addVertex(self,vertex, adj, weight=0):
+        if vertex not in self.vertex_add.keys():
+            self.vertex_add[vertex] = {}
+        # if adj not in self.graph.keys():
+        #     self.vertex_add[adj] = {}
+        self.vertex_add[vertex][adj] = weight
 
     def setVertex(self, vertex):
         if vertex not in self.graph.keys():
@@ -42,27 +49,43 @@ class Graph:
 
     def getPathCost(self, path):
         pathCost = 0
-        path = self.start + path + self.end
+        # path = self.start + path + self.end
+        # print(path)
         for vrt, adj in zip(path, path[1:]):
-            pathCost += self.graph[vrt][adj]
+            try:
+                pathCost += self.graph[vrt][adj]
+            except:
+                import sys
+                pathCost =  sys.maxsize
+                return pathCost
+        try:
+            pathCost += self.vertex_add[self.start][path[0]]
+        except:
+            pass
+
+        try:
+            pathCost += self.vertex_add[path[-1]][self.end]
+        except:
+            pass
+
         return pathCost
 
 
-if __name__ == '__main__':
-    graph = Graph()
-    graph.setAdjacent('a', 'b', 4)
-    graph.setAdjacent('a', 'c', 4)
-    graph.setAdjacent('a', 'd', 7)
-    graph.setAdjacent('a', 'e', 3)
-    graph.setAdjacent('b', 'c', 2)
-    graph.setAdjacent('b', 'd', 3)
-    graph.setAdjacent('b', 'e', 5)
-    graph.setAdjacent('c', 'd', 2)
-    graph.setAdjacent('c', 'e', 3)
-    graph.setAdjacent('d', 'e', 6)
+# if __name__ == '__main__':
+#     graph = Graph()
+#     graph.setAdjacent('a', 'b', 4)
+#     graph.setAdjacent('a', 'c', 4)
+#     graph.setAdjacent('a', 'd', 7)
+#     graph.setAdjacent('a', 'e', 3)
+#     graph.setAdjacent('b', 'c', 2)
+#     graph.setAdjacent('b', 'd', 3)
+#     graph.setAdjacent('b', 'e', 5)
+#     graph.setAdjacent('c', 'd', 2)
+#     graph.setAdjacent('c', 'e', 3)
+#     graph.setAdjacent('d', 'e', 6)
 
-    print(graph.getVertices(), '\n')
-    #print (graph)
+#     print(graph.getVertices(), '\n')
+#     #print (graph)
 
-    path = 'abcde'
-    print(graph.getPathCost(path))
+#     path = 'edcba'
+#     print(graph.getPathCost(path))
