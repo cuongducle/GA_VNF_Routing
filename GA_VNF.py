@@ -38,7 +38,11 @@ class GeneticAlgorithmTSP:
         self.elitismRate = elitismRate
 
     def optimize(self, graph):
-        population = self.__makePopulation(graph.getVertices())
+        list_nodes = list(graph.getVertices())
+        list_nodes.remove(self.start)
+        list_nodes.remove(self.end)
+        population = self.__makePopulation(list_nodes)
+        print(list_nodes)
         elitismOffset = math.ceil(self.population_size*self.elitismRate)
 
         if (elitismOffset > self.population_size):

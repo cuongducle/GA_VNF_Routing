@@ -41,6 +41,9 @@ class Graph:
         return self.graph[node1][nodes]
 
     def getVertices(self):
+        # list_nodes = list(self.graph.keys())
+        # list_nodes.remove(self.start)
+        # list_nodes.remove(self.end)
         return list(self.graph.keys())
 
     def getAdjacent(self, vertex):
@@ -49,8 +52,7 @@ class Graph:
 
     def getPathCost(self, path):
         pathCost = 0
-        # path = self.start + path + self.end
-        # print(path)
+        path = self.start + path + self.end
         for vrt, adj in zip(path, path[1:]):
             try:
                 pathCost += self.graph[vrt][adj]
@@ -58,15 +60,15 @@ class Graph:
                 import sys
                 pathCost =  sys.maxsize
                 return pathCost
-        try:
-            pathCost += self.vertex_add[self.start][path[0]]
-        except:
-            pass
+        # try:
+        #     pathCost += self.vertex_add[self.start][path[0]]
+        # except:
+        #     pass
 
-        try:
-            pathCost += self.vertex_add[path[-1]][self.end]
-        except:
-            pass
+        # try:
+        #     pathCost += self.vertex_add[path[-1]][self.end]
+        # except:
+        #     pass
 
         return pathCost
 

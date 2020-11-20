@@ -53,6 +53,7 @@ sfc_item = []
 for sfc_part in sfc:
     for item in sfc_part:
         sfc_item.append(item)
+
 sfc_item.append(start)
 sfc_item.append(finish)
 sfc_item = set(sfc_item)
@@ -65,28 +66,27 @@ for item in sfc_item:
 
 sfc_graph = Graph({})
 for i in range(len(sfc)-1):
-    for vertex in sfc[i]:
-        for adj in sfc[i+1]:  
-            try:
-                sfc_graph.setAdjacent(vertex, adj, dijsktra_dic[vertex][adj])
-                # print(vertex,' ', adj)
-            except:
-                import sys
-                sfc_graph.setAdjacent(vertex, adj, sys.maxsize)
-                # print(vertex,' ', adj)
+    for vertex in sfc_item:
+        for adj in sfc_item:
+            if adj == vertex:
+                sfc_graph.setAdjacent(vertex, adj, 0)
+            else:
+                try:
+                    sfc_graph.setAdjacent(vertex, adj, dijsktra_dic[vertex][adj])
+                    # print(vertex,' ', adj)
+                except:
+                    import sys
+                    sfc_graph.setAdjacent(vertex, adj, sys.maxsize)
+                    # print(vertex,' ', adj)
 
-for item in sfc[0]:
-    #print(start,' ', item, ' ', dijsktra_dic['1']['2'])
-    sfc_graph.addVertex(start,item,dijsktra_dic[start][item])
-    
-
-for item in sfc[-1]:
-    #print(item,' ', finish)
-    sfc_graph.addVertex(item,finish,dijsktra_dic[item][finish])
-
-print(sfc_graph.graph)
+sfc_graph.start = start
+sfc_graph.end = finish
 
 # ga_tsp = GeneticAlgorithmTSP(generations=20, population_size=100, tournamentSize=2, mutationRate=0.2, elitismRate=0.1)
 
 # optimal_path, path_cost = ga_tsp.optimize(sfc_graph)
 # print ('\nPath: {0}, Cost: {1}'.format(optimal_path, path_cost))
+# print(sfc_graph.getVertices())
+# print(sfc_graph.start)
+# print(sfc_graph.end)
+print(sfc_graph)
