@@ -2,7 +2,8 @@ import numpy as np
 import operator
 import Graph_directed
 import math
-import Graph
+#import Graph
+import random
 class GeneticAlgorithmTSP:
     def __init__(self, generations=100, population_size=10, tournamentSize=4, mutationRate=0.1, elitismRate=0.1):
         self.generations = generations
@@ -12,11 +13,11 @@ class GeneticAlgorithmTSP:
         self.elitismRate = elitismRate
     
     def optimize(self, graph):
-        list_nodes = list(graph.getVertices())
-        list_nodes.remove(graph.start)
-        list_nodes.remove(graph.end)
-        population = self.__makePopulation(list_nodes)
-        print(list_nodes)
+        # list_nodes = list(graph.sfc)
+        # list_nodes.remove(graph.start)
+        # list_nodes.remove(graph.end)
+        population = self.__makePopulation(graph.sfc)
+        # print(list_nodes)
         #population = self.__makePopulation(graph.getVertices())
         elitismOffset = math.ceil(self.population_size*self.elitismRate)
 
@@ -59,8 +60,8 @@ class GeneticAlgorithmTSP:
         return (population[fittest], fitness[fittest])
 
 
-    def __makePopulation(self, graph_nodes):
-        return [''.join(v for v in np.random.permutation(graph_nodes)) for i in range(self.population_size)]
+    def __makePopulation(self, sfc_nodes):
+        return [''.join(random.choice(v) for v in sfc_nodes) for i in range(self.population_size)]
     
 
     def __computeFitness(self, graph, population):

@@ -4,6 +4,7 @@ class Graph:
         self.start = ''
         self.end = ''
         self.vertex_add = {}
+        self.sfc = []
     def __str__(self):
         grh = ''
         for vrt in self.getVertices():
@@ -52,7 +53,6 @@ class Graph:
 
     def getPathCost(self, path):
         pathCost = 0
-        path = self.start + path + self.end
         for vrt, adj in zip(path, path[1:]):
             try:
                 pathCost += self.graph[vrt][adj]
@@ -60,6 +60,17 @@ class Graph:
                 import sys
                 pathCost =  sys.maxsize
                 return pathCost
+
+    # def getPathCost(self, path):
+    #     pathCost = 0
+    #     path = self.start + path + self.end
+    #     for vrt, adj in zip(path, path[1:]):
+    #         try:
+    #             pathCost += self.graph[vrt][adj]
+    #         except:
+    #             import sys
+    #             pathCost =  sys.maxsize
+    #             return pathCost
         # try:
         #     pathCost += self.vertex_add[self.start][path[0]]
         # except:

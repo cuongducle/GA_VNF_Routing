@@ -33,60 +33,73 @@ def int_data(data):
         out.append(int(item))
     return out
 
-input_graph = Graph({})
-sfc = []
-with open("input.txt","r") as f:
-    n,m = int_data(f.readline().split())
-    for _ in range(m):
-        a,b,c = f.readline().split()
-        input_graph.setAdjacent(a, b, int(c))
-    start,finish = f.readline().split()
-    num_sfc = int(f.readline())
-    #sfc.append(start)
-    for _ in range(num_sfc):
-        sfc.append(f.readline().split())
-    #sfc.append(finish)
+def full_path(path,dijsktra_path):
+    fullpath = ''
+    for i in range(len(path)-1):
+        tmp = dijsktra_path[path[i]][path[i+1]]
+        if tmp != path[i]:
+            fullpath = fullpath + path[i] + tmp
+        else:
+            fullpath = fullpath + path[i]
+    return fullpath + path[-1]
 
-input_graph.setStartEnd(start,finish)
+if __name__ == '__main__':
 
-sfc_item = []
-for sfc_part in sfc:
-    for item in sfc_part:
-        sfc_item.append(item)
+    input_graph = Graph({})
+    sfc = []
+    with open("input.txt","r") as f:
+        n,m = int_data(f.readline().split())
+        for _ in range(m):
+            a,b,c = f.readline().split()
+            input_graph.setAdjacent(a, b, int(c))
+        start,finish = f.readline().split()
+        num_sfc = int(f.readline())
+        sfc.append(start)
+        for _ in range(num_sfc):
+            sfc.append(f.readline().split())
+        sfc.append(finish)
 
-sfc_item.append(start)
-sfc_item.append(finish)
-sfc_item = set(sfc_item)
+    input_graph.setStartEnd(start,finish)
 
-dijsktra_dic = {}
-for item in sfc_item:
-    dijsktra_dic[item] = dijsktra(input_graph,item)[0]
+    sfc_item = []
+    for sfc_part in sfc:
+        for item in sfc_part:
+            sfc_item.append(item)
 
-#print(dijsktra_dic)
+    sfc_item.append(start)
+    sfc_item.append(finish)
+    sfc_item = set(sfc_item)
 
-sfc_graph = Graph({})
-for i in range(len(sfc)-1):
-    for vertex in sfc_item:
-        for adj in sfc_item:
-            if adj == vertex:
-                sfc_graph.setAdjacent(vertex, adj, 0)
-            else:
-                try:
-                    sfc_graph.setAdjacent(vertex, adj, dijsktra_dic[vertex][adj])
-                    # print(vertex,' ', adj)
-                except:
-                    import sys
-                    sfc_graph.setAdjacent(vertex, adj, sys.maxsize)
-                    # print(vertex,' ', adj)
+    dijsktra_dic = {}
+    dijsktra_way = {}
+    for item in sfc_item:
+        dijsktra_dic[item] = dijsktra(input_graph,item)[0]
+        dijsktra_way[item] = dijsktra(input_graph,item)[1]
 
-sfc_graph.start = start
-sfc_graph.end = finish
+    #print(dijsktra_dic)
 
-# ga_tsp = GeneticAlgorithmTSP(generations=20, population_size=100, tournamentSize=2, mutationRate=0.2, elitismRate=0.1)
+    sfc_graph = Graph({})
+    for i in range(len(sfc)-1):
+        for vertex in sfc_item:
+            for adj in sfc_item:
+                if adj == vertex:
+                    sfc_graph.setAdjacent(vertex, adj, 0)
+                else:
+                    try:
+                        sfc_graph.setAdjacent(vertex, adj, dijsktra_dic[vertex][adj])
+                        # print(vertex,' ', adj)
+                    except:
+                        import sys
+                        sfc_graph.setAdjacent(vertex, adj, sys.maxsize)
+                        # print(vertex,' ', adj)
 
-# optimal_path, path_cost = ga_tsp.optimize(sfc_graph)
-# print ('\nPath: {0}, Cost: {1}'.format(optimal_path, path_cost))
-# print(sfc_graph.getVertices())
-# print(sfc_graph.start)
-# print(sfc_graph.end)
-print(sfc_graph)
+    sfc_graph.start = start
+    sfc_graph.end = finish
+    sfc_graph.sfc = sfc
+    ga_tsp = GeneticAlgorithmTSP(generations=20, population_size=20, tournamentSize=2, mutationRate=0, elitismRate=0.1)
+
+    optimal_path, path_cost = ga_tsp.optimize(sfc_graph)
+    print ('\nPath: {0}, Cost: {1}'.format(optimal_path, path_cost))
+
+    print( '---  final path --- ')
+    print(full_path(optimal_path,dijsktra_way))
