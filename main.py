@@ -2,7 +2,8 @@ from Graph_directed import Graph
 from GeneticAlgorithmTSP import GeneticAlgorithmTSP
 import heapq
 import numpy as np
-
+import networkx as nx
+import matplotlib.pyplot as plt
 
 def dijsktra(graph, initial):
     visited = {initial: 0}
@@ -32,6 +33,31 @@ def int_data(data):
     for item in data:
         out.append(int(item))
     return out
+
+def draw_way(graph,path):
+    G = nx.DiGraph(directed=True,format='weighted_adjacency_matrix')
+    for i in range(len(path)-1):
+        start = path[i]
+        target = path[i+1]
+        G.add_edge(start, target, weight=graph.getDistance(start,target))
+
+    # Need to create a layout when doing
+    options = {
+        'node_color': 'red',
+        'node_size': 500,
+        'width': 3,
+        'arrowstyle': '-|>',
+        'arrowsize': 12,
+    }
+
+    pos = nx.spring_layout(G)
+    nodes = {}
+    for item in path:
+        nodes[item] = str(item)
+    nx.draw_networkx_edges(G,pos, connectionstyle='arc3, rad = 0.3', alpha=0.2)
+    nx.draw_networkx_labels(G,pos,nodes,font_size=16,font_color='r')
+    plt.savefig("output/Graph.png", format="PNG")
+    plt.show()
 
 def full_path(path,dijsktra_path):
     fullpath = ''
@@ -99,7 +125,8 @@ if __name__ == '__main__':
     ga_tsp = GeneticAlgorithmTSP(generations=20, population_size=20, tournamentSize=2, mutationRate=0, elitismRate=0.1)
 
     optimal_path, path_cost = ga_tsp.optimize(sfc_graph)
+    fullpath = full_path(optimal_path,dijsktra_way)
     print ('\nPath: {0}, Cost: {1}'.format(optimal_path, path_cost))
 
-    print( '---  final path --- ')
-    print(full_path(optimal_path,dijsktra_way))
+    print( '---  final path --- :', fullpath)
+    draw_way(input_graph,fullpath)
