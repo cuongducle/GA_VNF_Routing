@@ -58,8 +58,14 @@ def draw_way(graph,path):
     nx.draw_networkx_labels(G,pos,nodes,font_size=16,font_color='r')
     plt.savefig("output/Graph.png", format="PNG")
     plt.show()
+def replace_extra_path(path):
+    for item in range(10):
+        x = str(item)
+        path = path.replace(x+x,x)
+    return path
 
 def full_path(path,dijsktra_path):
+    path = replace_extra_path(path)
     fullpath = ''
     for i in range(len(path)-1):
         tmp = dijsktra_path[path[i]][path[i+1]]
