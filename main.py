@@ -4,6 +4,7 @@ import heapq
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
+import random
 
 def dijsktra(graph, initial):
     visited = {initial: 0}
@@ -34,30 +35,6 @@ def int_data(data):
         out.append(int(item))
     return out
 
-def draw_way(graph,path):
-    G = nx.DiGraph(directed=True,format='weighted_adjacency_matrix')
-    for i in range(len(path)-1):
-        start = path[i]
-        target = path[i+1]
-        G.add_edge(start, target, weight=graph.getDistance(start,target))
-
-    # Need to create a layout when doing
-    options = {
-        'node_color': 'red',
-        'node_size': 500,
-        'width': 3,
-        'arrowstyle': '-|>',
-        'arrowsize': 12,
-    }
-
-    pos = nx.spring_layout(G)
-    nodes = {}
-    for item in path:
-        nodes[item] = str(item)
-    nx.draw_networkx_edges(G,pos, connectionstyle='arc3, rad = 0.3', alpha=0.2)
-    nx.draw_networkx_labels(G,pos,nodes,font_size=16,font_color='r')
-    plt.savefig("output/Graph.png", format="PNG")
-    plt.show()
 def replace_extra_path(path):
     for item in range(10):
         x = str(item)
@@ -65,7 +42,7 @@ def replace_extra_path(path):
     return path
 
 def full_path(path,dijsktra_path):
-    path = replace_extra_path(path)
+    # path = replace_extra_path(path)
     fullpath = ''
     for i in range(len(path)-1):
         tmp = dijsktra_path[path[i]][path[i+1]]
@@ -75,11 +52,102 @@ def full_path(path,dijsktra_path):
             fullpath = fullpath + path[i]
     return fullpath + path[-1]
 
-if __name__ == '__main__':
+def generate_data_txt(n,m,l,f_out,max_weight = 10, max_len_sfc = 4):
+    with open(f_out,'w') as f:
+    # input_graph = Graph({})
+        sfc = []
+        f.write(str(n)+' '+str(m)+'\n')
+        if (m > n*(n-1)):
+            print('Too many vertex')
+            return
+        c = 1
+        list_vertex = []
+        while c <= m:
+            a = random.randint(1,n)
+            b = random.randint(1,n)
+            if (a != b) and ((a,b) not in list_vertex):
+                # list_vertex.append((a,b))
+                f.write(str(a)+' '+ str(b)+' '+str(random.randint(1,max_weight))+'\n')
+                c = c + 1
+        start,end = random.sample(range(1,n), 2)
+        f.write(str(start) + ' '+str(end)+'\n')
+        f.write(str(l)+'\n')
+        # input_graph.setStartEnd(start,finish)
+        # sfc.append(start)
+        for i in range(l):
+            sfc.append(random.sample(range(1,n), random.randint(2,max_len_sfc) ))
+        for i in range(l):
+            out = ''
+            for item in sfc[i]: 
+                out = out + str(item) + ' '
+            f.write(out+'\n')
+        # sfc.append(end)
 
+
+def draw_way(graph,path):
+    H = nx.DiGraph(directed=True,format='weighted_adjacency_matrix')
+    for i in range(len(path)-1):
+        start = path[i]
+        target = path[i+1]
+        H.add_edge(start, target, weight=graph.getDistance(start,target))
+
+    options = {
+        'node_color': 'red',
+        'node_size': 500,
+        'width': 3,
+        'arrowstyle': '-|>',
+        'arrowsize': 12,
+    }
+
+    pos_2 = nx.spring_layout(H)
+    nodes_2 = {}
+    for item in path:
+        nodes_2[item] = str(item)
+    nx.draw_networkx_edges(H,pos_2, connectionstyle='arc3, rad = 0.3', alpha=0.2)
+    nx.draw_networkx_labels(H,pos_2,nodes_2,font_size=16,font_color='r')
+    plt.savefig("output/Graph.png", format="PNG")
+    plt.show()
+
+
+def draw_graph(graph):
+    G = nx.DiGraph(directed=True,format='weighted_adjacency_matrix')
+    for key in input_graph.graph.keys():
+        value = input_graph.graph[key]
+        for key2 in value.keys():
+            G.add_edge(key, key2, weight=graph.getDistance(key,key2))
+    # Need to create a layout when doing
+    options = {
+        'node_color': 'red',
+        'node_size': 500,
+        'width': 3,
+        'arrowstyle': '-|>',
+        'arrowsize': 12,
+        # 'edge_labels':True,
+        #  'graph_border':True
+    }
+
+    #pos = nx.spring_layout(G)
+    #nx.draw_networkx(G, arrows=True, **options)
+    pos = nx.spring_layout(G)
+    emp = input_graph.getVertices()
+    nodes = {}
+    for item in emp:
+        nodes[item] = str(item)
+# Here there is the addition:
+
+    edge_labels = dict([((u,v), round(d['weight'], 3))
+             for u,v,d in G.edges(data=True)])
+
+    #nx.draw_networkx_edge_labels(G,pos,edge_labels=edge_labels,label_pos=0.15, font_size=10)
+    # nx.draw_networkx_edges(G,pos, connectionstyle='arc3, rad = 0.3', alpha=0.2)
+    # nx.draw_networkx_labels(G,pos,nodes,font_size=20,font_color='r')
+    plt.savefig("output/input.png", format="PNG")
+
+if __name__ == '__main__':
+    generate_data_txt(10,45,8,'random.txt')
     input_graph = Graph({})
     sfc = []
-    with open("input.txt","r") as f:
+    with open("random.txt","r") as f:
         n,m = int_data(f.readline().split())
         for _ in range(m):
             a,b,c = f.readline().split()
@@ -101,6 +169,8 @@ if __name__ == '__main__':
     sfc_item.append(start)
     sfc_item.append(finish)
     sfc_item = set(sfc_item)
+
+# bắt đầu từ đây
 
     dijsktra_dic = {}
     dijsktra_way = {}
@@ -128,11 +198,12 @@ if __name__ == '__main__':
     sfc_graph.start = start
     sfc_graph.end = finish
     sfc_graph.sfc = sfc
-    ga_tsp = GeneticAlgorithmTSP(generations=20, population_size=20, tournamentSize=2, mutationRate=0, elitismRate=0.1)
+    ga_tsp = GeneticAlgorithmTSP(generations=100, population_size=1000, tournamentSize=2, mutationRate=0, elitismRate=0.1)
 
     optimal_path, path_cost = ga_tsp.optimize(sfc_graph)
     fullpath = full_path(optimal_path,dijsktra_way)
     print ('\nPath: {0}, Cost: {1}'.format(optimal_path, path_cost))
 
     print( '---  final path --- :', fullpath)
+    # draw_graph(input_graph)
     draw_way(input_graph,fullpath)

@@ -133,7 +133,7 @@ if __name__ == '__main__':
     graph.setAdjacent('d', 'e', 6)
 
 
-    ga_tsp = GeneticAlgorithmTSP(generations=20, population_size=100, tournamentSize=2, mutationRate=0.2, elitismRate=0.1)
+    ga_tsp = GeneticAlgorithmTSP(generations=100, population_size=1000, tournamentSize=2, mutationRate=0.2, elitismRate=0.1)
     
     optimal_path, path_cost = ga_tsp.optimize(graph)
     print ('\nPath: {0}, Cost: {1}'.format(optimal_path, path_cost))
