@@ -9,7 +9,7 @@ def check_child(a,b):
             return False
     return True
 
-file='/home/hoangntbn/Desktop/20201/ttth/random_1.txt'
+file='random.txt'
 f=open(file,'r')
 
 contents=[]

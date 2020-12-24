@@ -6,6 +6,18 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import random
 
+def map_to_char(num):
+    return chr(int(num)+97)
+def map_to_int(char):
+    return ord(char) - 97
+def map_string_to_list(string):
+    out = ''
+    list_int = []
+    for char in string:
+        list_int.append(str(map_to_int(char))) 
+    return '-'.join(list_int)
+
+
 def dijsktra(graph, initial):
     visited = {initial: 0}
     path = {}
@@ -147,16 +159,22 @@ if __name__ == '__main__':
     generate_data_txt(10,45,8,'random.txt')
     input_graph = Graph({})
     sfc = []
-    with open("random.txt","r") as f:
+    with open("input.txt","r") as f:
         n,m = int_data(f.readline().split())
         for _ in range(m):
             a,b,c = f.readline().split()
-            input_graph.setAdjacent(a, b, int(c))
+            input_graph.setAdjacent(map_to_char(a), map_to_char(b), int(c))
         start,finish = f.readline().split()
+        start = map_to_char(start)
+        finish = map_to_char(finish)
         num_sfc = int(f.readline())
         sfc.append(start)
         for _ in range(num_sfc):
-            sfc.append(f.readline().split())
+            tmp = f.readline().split()
+            tmp_convert = []
+            for item in tmp:
+                tmp_convert.append(map_to_char(item))
+            sfc.append(tmp_convert)
         sfc.append(finish)
 
     input_graph.setStartEnd(start,finish)
@@ -202,8 +220,8 @@ if __name__ == '__main__':
 
     optimal_path, path_cost = ga_tsp.optimize(sfc_graph)
     fullpath = full_path(optimal_path,dijsktra_way)
-    print ('\nPath: {0}, Cost: {1}'.format(optimal_path, path_cost))
+    print ('\nPath: {0}, Cost: {1}'.format(map_string_to_list(optimal_path), path_cost))
 
-    print( '---  final path --- :', fullpath)
+    print( '---  final path --- :', map_string_to_list(fullpath))
     # draw_graph(input_graph)
     draw_way(input_graph,fullpath)

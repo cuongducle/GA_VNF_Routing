@@ -4,8 +4,21 @@ import Graph_directed
 import math
 #import Graph
 import random
+
+def map_to_char(num):
+    return chr(int(num)+97)
+def map_to_int(char):
+    return ord(char) - 97
+def map_string_to_list(string):
+    out = ''
+    list_int = []
+    for char in string:
+        list_int.append(str(map_to_int(char))) 
+    return '-'.join(list_int)
+
+
 class GeneticAlgorithmTSP:
-    def __init__(self, generations=100, population_size=10, tournamentSize=4, mutationRate=0.1, elitismRate=0.1):
+    def __init__(self, generations=10, population_size=10, tournamentSize=4, mutationRate=0.1, elitismRate=0.1):
         self.generations = generations
         self.population_size = population_size
         self.tournamentSize = tournamentSize
@@ -24,18 +37,18 @@ class GeneticAlgorithmTSP:
         if (elitismOffset > self.population_size):
             raise ValueError('Elitism Rate must be in [0,1].')
         
-        print ('Optimizing TSP Route for Graph:\n{0}'.format(graph))
+        # print ('Optimizing TSP Route for Graph:\n{0}'.format(graph))
 
         for generation in range(self.generations):
             print ('\nGeneration: {0}'.format(generation + 1))
-            print ('Population: {0}'.format(population))
+            # print ('Population: {0}'.format([map_string_to_list(item)] for item in population))
             
             newPopulation = []            
             fitness = self.__computeFitness(graph, population)
             print ('Fitness:    {0}'.format(fitness))
             fittest = np.argmin(fitness)
 
-            print ('Fittest Route: {0} ({1})'.format(population[fittest], fitness[fittest]))
+            print ('Fittest Route: {0} ({1})'.format(map_string_to_list(population[fittest]), fitness[fittest]))
             
             if elitismOffset:
                 elites = np.array(fitness).argsort()[:elitismOffset]
