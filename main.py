@@ -177,7 +177,7 @@ if __name__ == '__main__':
     # generate_data_txt(25,100,50,'random.txt')
     input_graph = Graph({})
     sfc = []
-    with open("index_1.txt","r") as f:
+    with open("random.txt","r") as f:
         n,m = int_data(f.readline().split())
         for _ in range(m):
             a,b,c = f.readline().split()
@@ -236,9 +236,13 @@ if __name__ == '__main__':
     sfc_graph.start = start
     sfc_graph.end = finish
     sfc_graph.sfc = sfc
-    ga_tsp = GeneticAlgorithmTSP(generations=100, population_size=100, tournamentSize=2, mutationRate=0, elitismRate=0.1)
+    ga_tsp = GeneticAlgorithmTSP(generations=100, population_size=100, tournamentSize=2, mutationRate=0.1, elitismRate=0.1)
 
-    optimal_path, path_cost = ga_tsp.optimize(sfc_graph)
+    optimal_path, path_cost , generation_plot,fitness_plot = ga_tsp.optimize(sfc_graph)
+    # print (fitness_plot)
+    plt.plot(generation_plot,fitness_plot)
+    plt.show()
+    plt.savefig("output/convert.png", format="PNG")
     fullpath = full_path(optimal_path,dijsktra_way)
     
     print ('\nPath: {0}, Cost: {1}'.format(map_string_to_list(optimal_path), path_cost))

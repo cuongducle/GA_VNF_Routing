@@ -4,6 +4,7 @@ import Graph_directed
 import math
 #import Graph
 import random
+import matplotlib.pyplot as plt
 
 def map_to_char(num):
     return chr(int(num)+97)
@@ -26,6 +27,7 @@ class GeneticAlgorithmTSP:
         self.elitismRate = elitismRate
     
     def optimize(self, graph):
+        self.graph = graph
         # list_nodes = list(graph.sfc)
         # list_nodes.remove(graph.start)
         # list_nodes.remove(graph.end)
@@ -38,15 +40,19 @@ class GeneticAlgorithmTSP:
             raise ValueError('Elitism Rate must be in [0,1].')
         
         # print ('Optimizing TSP Route for Graph:\n{0}'.format(graph))
-
+        fitness_plot = []
+        generation_plot = []
         for generation in range(self.generations):
             print ('\nGeneration: {0}'.format(generation + 1))
             # print ('Population: {0}'.format(population))
             
             newPopulation = []            
             fitness = self.__computeFitness(graph, population)
+            fitness_plot.append(np.mean(fitness))
+            generation_plot.append(generation + 1)
             print ('Fitness:    {0}'.format(fitness))
             fittest = np.argmin(fitness)
+
 
             print ('Fittest Route: {0} ({1})'.format(map_string_to_list(population[fittest]), fitness[fittest]))
             
@@ -75,7 +81,7 @@ class GeneticAlgorithmTSP:
                 print ('\nConverged to a local minima.', end='')
                 break
 
-        return (population[fittest], fitness[fittest])
+        return (population[fittest], fitness[fittest],generation_plot,fitness_plot)
 
 
     def __makePopulation(self, sfc_nodes):
@@ -110,13 +116,14 @@ class GeneticAlgorithmTSP:
     #     return ''.join(v for v in offspring) 
 
 
-    def __mutate(self, genome):
-        if np.random.random() < self.mutationRate:
-            index_low, index_high = self.__computeLowHighIndexes(genome)
-            return self.__swap(index_low, index_high-1, genome)
+    def __mutate(self,genome):
+        if np.random.random() < 1:
+            index_mutate = random.randint(1,len(genome)-2)
+            sfc_mutate = self.graph.sfc[index_mutate]
+            mutated = random.choice(sfc_mutate)
+            return genome[:index_mutate] + mutated + genome[index_mutate+1:]
         else:
             return genome
-
 
     def __computeLowHighIndexes(self, string):
         index_low = np.random.randint(1, len(string)-2)
@@ -154,7 +161,7 @@ if __name__ == '__main__':
     graph.setAdjacent('d', 'e', 6)
 
 
-    ga_tsp = GeneticAlgorithmTSP(generations=10, population_size=100, tournamentSize=2, mutationRate=0.2, elitismRate=0.1)
+    ga_tsp = GeneticAlgorithmTSP(generations=100, population_size=1000, tournamentSize=2, mutationRate=0.2, elitismRate=0.1)
     
     optimal_path, path_cost = ga_tsp.optimize(graph)
     print ('\nPath: {0}, Cost: {1}'.format(optimal_path, path_cost))
