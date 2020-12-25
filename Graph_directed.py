@@ -52,6 +52,7 @@ class Graph:
             return self.graph[vertex]
 
     def getPathCost(self, path):
+        path = path.replace('-','')
         pathCost = 0
         for vrt, adj in zip(path, path[1:]):
             try:
