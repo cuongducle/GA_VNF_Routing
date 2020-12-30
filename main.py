@@ -174,7 +174,7 @@ def draw_graph(graph):
     plt.savefig("output/input.png", format="PNG")
 
 if __name__ == '__main__':
-    generate_data_txt(25,100,100,'random.txt')
+    generate_data_txt(100,1000,100,'random.txt')
     input_graph = Graph({})
     sfc = []
     with open("random.txt","r") as f:
@@ -236,7 +236,7 @@ if __name__ == '__main__':
     sfc_graph.start = start
     sfc_graph.end = finish
     sfc_graph.sfc = sfc
-    ga_tsp = GeneticAlgorithmTSP(generations=100, population_size=100, tournamentSize=2, mutationRate=0.1, elitismRate=0.1)
+    ga_tsp = GeneticAlgorithmTSP(generations=n*3, population_size=100, tournamentSize=2, mutationRate=0.2, elitismRate=0.1, converge_ratio = 0.6)
 
     optimal_path, path_cost , generation_plot,fitness_plot = ga_tsp.optimize(sfc_graph)
     # print (fitness_plot)
@@ -248,7 +248,11 @@ if __name__ == '__main__':
     print ('\nPath: {0}, Cost: {1}'.format(map_string_to_list(optimal_path), path_cost))
 
     print( '---  final path --- :', map_string_to_list(fullpath))
+    print()
+    print('cost : ', path_cost)
+    print()
     print('time : ', time.time() - time_start)
+    
     # draw_graph(input_graph)
     draw_way(input_graph,fullpath)
-    print(map_to_int(start),' ',map_to_int(finish))
+    # print(map_to_int(start),' ',map_to_int(finish))

@@ -5,6 +5,7 @@ import math
 #import Graph
 import random
 import matplotlib.pyplot as plt
+import sys
 
 def map_to_char(num):
     return chr(int(num)+97)
@@ -19,13 +20,13 @@ def map_string_to_list(string):
 
 
 class GeneticAlgorithmTSP:
-    def __init__(self, generations=10, population_size=10, tournamentSize=4, mutationRate=0.1, elitismRate=0.1):
+    def __init__(self, generations=10, population_size=10, tournamentSize=4, mutationRate=0.1, elitismRate=0.1,converge_ratio = 0.3):
         self.generations = generations
         self.population_size = population_size
         self.tournamentSize = tournamentSize
         self.mutationRate = mutationRate
         self.elitismRate = elitismRate
-    
+        self.converge_ratio = converge_ratio
     def optimize(self, graph):
         self.graph = graph
         # list_nodes = list(graph.sfc)
@@ -42,6 +43,8 @@ class GeneticAlgorithmTSP:
         # print ('Optimizing TSP Route for Graph:\n{0}'.format(graph))
         fitness_plot = []
         generation_plot = []
+        count_fittest_remain = 0
+        fittest_value_old = sys.maxsize
         for generation in range(self.generations):
             print ('\nGeneration: {0}'.format(generation + 1))
             # print ('Population: {0}'.format(population))
@@ -51,9 +54,13 @@ class GeneticAlgorithmTSP:
             fitness_plot.append(np.mean(fitness))
             generation_plot.append(generation + 1)
             print ('Fitness:    {0}'.format(fitness))
+            
             fittest = np.argmin(fitness)
-
-
+            fittest_value = fitness[fittest]
+            if fittest_value == fittest_value_old:
+                count_fittest_remain = count_fittest_remain + 1
+            else:
+                fittest_value_old = fittest_value
             print ('Fittest Route: {0} ({1})'.format(map_string_to_list(population[fittest]), fitness[fittest]))
             
             if elitismOffset:
@@ -77,8 +84,8 @@ class GeneticAlgorithmTSP:
     
             population = newPopulation
 
-            if self.__converged(population):
-                print ('\nConverged to a local minima.', end='')
+            if count_fittest_remain == self.generations*self.converge_ratio:
+                print ('\nConverged to a local minima after ' + str(count_fittest_remain) + ' generations fittest not change', end='')
                 break
 
         return (population[fittest], fitness[fittest],generation_plot,fitness_plot)
@@ -143,8 +150,8 @@ class GeneticAlgorithmTSP:
         return ''.join(string)
 
 
-    def __converged(self, population):
-        return all(genome == population[0] for genome in population[:len(population) // 3])
+    # def __converged(self, list_fittest):
+    #     return all(genome == population[0] for genome in population[:len(population) // 3])
 
 
 if __name__ == '__main__':
@@ -161,7 +168,7 @@ if __name__ == '__main__':
     graph.setAdjacent('d', 'e', 6)
 
 
-    ga_tsp = GeneticAlgorithmTSP(generations=100, population_size=1000, tournamentSize=2, mutationRate=0.2, elitismRate=0.1)
+    ga_tsp = GeneticAlgorithmTSP(generations=100, population_size=1000, tournamentSize=2, mutationRate=0.2, elitismRate=0.1, converge_ratio = 0.5)
     
     optimal_path, path_cost = ga_tsp.optimize(graph)
     print ('\nPath: {0}, Cost: {1}'.format(optimal_path, path_cost))
