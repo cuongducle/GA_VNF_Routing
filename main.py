@@ -174,7 +174,7 @@ def draw_graph(graph):
     plt.savefig("output/input.png", format="PNG")
 
 if __name__ == '__main__':
-    # generate_data_txt(25,100,50,'random.txt')
+    generate_data_txt(25,100,100,'random.txt')
     input_graph = Graph({})
     sfc = []
     with open("random.txt","r") as f:
